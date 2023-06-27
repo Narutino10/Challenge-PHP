@@ -1,0 +1,28 @@
+bdd Client:
+- Mail.
+- Nom.
+- Prenom.
+- MDP.
+- ID.
+- facultatif Images.
+
+BDD Stat:
+- Match jouer.
+- Match Gagner.
+- But.
+- Passe decisive.
+- ID.
+
+Bdd Agent:
+- Mail.
+- Nom.
+- Prenom.
+- MDP.
+- Roles (Patron/Employer).
+
+BDD Terrain: 
+- Nom.
+- Capacite.
+- Type de terrrain. 
+- Etat (Reserver ou non).
+- Images.

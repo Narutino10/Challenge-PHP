@@ -1,0 +1,85 @@
+
+Premiere Taches a faire 
+Faire une bdd, un git , tout rassembler
+
+
+
+
+
+
+
+
+
+
+
+
+Liste des fonctionnalités :
+- Dashboard (accueil backoffice)
+- Gestion des utilisateurs (CRUD) avec gestion des rôles et validation du compte par mail.
+- Gestion des pages (CRUD) avec gestion du menu en front
+- Gestion des commentaires avec modération ou signalement
+- Sitemap.xml
+- Optimisation du SEO (Title, meta description, ...)
+- Gestion du template front (Police, couleurs, ...)
+
+Librairies autorisées :
+- jQuery
+- WYSIWYG
+- JavaScript Charts & Maps (amcharts, highcharts, ...)
+- Datatables
+- PHPMAILER (interdiction d'utiliser la fonction native mail de php) ou autre si autre système de
+
+notification (Exemple SMS)
+- OK pour l'utilisation de composer
+- POUR TOUTES AUTRES LIBRAIRIES ME DEMANDER.
+
+Attentes :
+- Une solution en ligne (OBLIGATOIRE) https://free-for.dev/
+- Github ou Gitlab https://www.conventionalcommits.org/en/v1.0.0/
+- Commit signé non obligatoire
+- Docker essentiellement pour l'env de dev
+
+Techniques :
+- Namespace
+- Singleton
+
+Dashbaord: Rajouter des images, faire des annonce, gestion des terrain, gestion des employés, création d'evenment.
+Gestion user: Creation de compte , choix du compte(Employer,patron,Client), modification, supression, mail de confirmation.
+Gestion des pages: ajouter des images, faire des commentaire , louer un terrain en cliquant dessus(Client), Ajouter des evenment 
+Dashboard, Changement de terrain lors d'une selection.
+
+
+
+
+
+bdd Client:
+- Mail.
+- Nom.
+- Prenom.
+- MDP.
+- ID.
+- facultatif Images.
+
+BDD Stat:
+- Match jouer.
+- Match Gagner.
+- But.
+- Passe decisive.
+- ID.
+
+Bdd Agent:
+- Mail.
+- Nom.
+- Prenom.
+- MDP.
+- Roles (Patron/Employer).
+
+BDD Terrain: 
+- Nom.
+- Capacite.
+- Type de terrrain. 
+- Etat (Reserver ou non).
+- Images.
+
+Chose a faire aujourd'hui systeme de connexion, inscription, confirmation avec mail,
+et si possible mot de passe oublier.
