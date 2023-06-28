@@ -1,47 +1,65 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['mail'], $_POST['nom'], $_POST['prenom'], $_POST['password'])) {
-        $host = 'localhost';
-        $port = '5432'; // Le port par défaut de PostgreSQL est généralement 5432, mais cela peut varier en fonction de votre configuration
-        $db   = 'five';
-        $user = 'postgres';
-        $pass = 'toto';
+// Informations de connexion à la base de données PostgreSQL
+$host = 'localhost';
+$port = '5432';
+$dbname = 'five';
+$username = 'postgres';
+$password = 'toto';
 
-        $dsn = "pgsql:host=$host;port=$port;dbname=$db";
-        $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+try {
+    // Créer une nouvelle connexion PDO à la base de données PostgreSQL
+    $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $username, $password);
 
-        $mail = $_POST['mail'];
-        $nom = $_POST['nom'];
-        $prenom = $_POST['prenom'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    // Configurer le mode d'erreur PDO pour afficher les exceptions
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $pdo->prepare('INSERT INTO Client (Mail, Nom, Prenom, MDP) VALUES (?, ?, ?, ?)');
-        $stmt->execute([$mail, $nom, $prenom, $password]);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Exemple de requête SQL pour vérifier l'authentification de l'utilisateur
+        $query = "SELECT * FROM Client WHERE Mail = :email AND MDP = :password";
+        $stmt = $pdo->prepare($query);
 
-        header("Location: login.php");
-        exit();
-    } else {
-        echo 'Veuillez remplir tous les champs.';
+        if (isset($_POST['mail'], $_POST['password'])) {
+            // Remplacer les valeurs avec les entrées de l'utilisateur
+            $email = $_POST['mail'];
+            $password = $_POST['password'];
+
+            // Exécuter la requête avec les paramètres
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':password', $password);
+            $stmt->execute();
+
+            // Vérifier si une ligne correspondante a été trouvée
+            if ($stmt->rowCount() > 0) {
+                // L'utilisateur est authentifié avec succès
+                header('Location: dashboard.php'); // Rediriger vers dashboard.php
+                exit();
+            } else {
+                // L'authentification a échoué
+                echo 'Identifiants invalides. Veuillez réessayer.';
+            }
+        } else {
+            echo 'Veuillez remplir tous les champs.';
+        }
     }
+} catch (PDOException $e) {
+    // Gérer les erreurs de connexion à la base de données
+    echo 'Erreur de connexion à la base de données : ' . $e->getMessage();
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Page d'Inscription</title>
+    <title>Connexion</title>
 </head>
 <body>
 <form method="post" action="">
     <label for="mail">Email:</label><br>
     <input type="text" id="mail" name="mail"><br>
-    <label for="nom">Nom:</label><br>
-    <input type="text" id="nom" name="nom"><br>
-    <label for="prenom">Prenom:</label><br>
-    <input type="text" id="prenom" name="prenom"><br>
     <label for="password">Mot de passe:</label><br>
     <input type="password" id="password" name="password"><br><br>
-    <input type="submit" value="Inscription">
+    <a href="Oubli.php">Mot de passe oublié ?</a><br><br>
+    <input type="submit" value="Connexion">
 </form>
 </body>
 </html>

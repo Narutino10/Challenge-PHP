@@ -1,56 +1,76 @@
 <?php
-// Vérifier si le formulaire a été soumis
-if (isset($_POST['submit'])) {
-    // Récupérer l'adresse e-mail soumise
-    $email = $_POST['email'];
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-    // Vérifier si l'adresse e-mail existe dans la base de données
-    // (Vous devez mettre en œuvre cette vérification en fonction de votre structure de base de données)
-    if (emailExists($email)) {
-        // Générer un token unique pour la réinitialisation du mot de passe
-        $token = generateToken();
+require 'vendor/autoload.php';
 
-        // Enregistrer le token dans la base de données avec la correspondance de l'adresse e-mail
-        saveToken($email, $token);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['mail'])) {
+        $host = 'localhost';
+        $port = '5432';
+        $db   = 'five';
+        $user = 'postgres';
+        $pass = 'toto';
 
-        // Envoyer l'e-mail de réinitialisation du mot de passe
-        $subject = 'Réinitialisation du mot de passe';
-        $message = 'Bonjour, cliquez sur le lien suivant pour réinitialiser votre mot de passe : ' . generateResetLink($token);
-        $headers = 'From: votre@email.com';
+        $dsn = "pgsql:host=$host;port=$port;dbname=$db";
+        $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
-        if (mail($email, $subject, $message, $headers)) {
-            // L'e-mail a été envoyé avec succès
-            echo 'Un e-mail de réinitialisation du mot de passe a été envoyé à votre adresse e-mail.';
+        $mail = $_POST['mail'];
+        $stmt = $pdo->prepare('SELECT Mail FROM Client WHERE Mail = ?');
+        $stmt->execute([$mail]);
+
+        if ($stmt->rowCount() > 0) {
+            // Générer un jeton unique
+            $token = bin2hex(random_bytes(50));
+
+            // Sauvegarder le jeton dans la base de données ou dans une autre forme de stockage persistent
+
+            // Envoyer un email à l'utilisateur avec le lien de réinitialisation
+            $resetLink = "http://localhost/PHP/reset.php?token=" . $token;
+
+            $mail = new PHPMailer(true);
+
+            try {
+                $mail->SMTPDebug = 2;
+                $mail->isSMTP();
+                $mail->Host       = 'smtp-mail.outlook.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'iouahabi1@myges.fr';
+                $mail->Password   = 'x67u6c2K';
+                $mail->SMTPSecure = 'tls';
+                $mail->Port       = 587;
+
+                $mail->setFrom('iouahabi1@myges.fr', 'Support');
+                $mail->addAddress($_POST['mail']);
+
+                $mail->isHTML(true);
+                $mail->Subject = 'Réinitialisation de votre mot de passe';
+                $mail->Body    = 'Cliquez sur le lien suivant pour réinitialiser votre mot de passe : <a href="' . $resetLink . '">' . $resetLink . '</a>';
+
+                $mail->send();
+                echo 'Un email a été envoyé à votre adresse avec des instructions pour réinitialiser votre mot de passe.';
+            } catch (Exception $e) {
+                echo "L'email n'a pas pu être envoyé. Mailer Error: {$mail->ErrorInfo}";
+            }
         } else {
-            // Une erreur s'est produite lors de l'envoi de l'e-mail
-            echo 'Une erreur s\'est produite lors de l\'envoi de l\'e-mail. Veuillez réessayer plus tard.';
+            echo 'Aucun compte trouvé avec cette adresse e-mail.';
         }
     } else {
-        // L'adresse e-mail n'existe pas dans la base de données
-        echo 'Cette adresse e-mail n\'est pas enregistrée.';
+        echo 'Veuillez entrer votre adresse e-mail.';
     }
 }
-
-// Fonction pour vérifier si l'adresse e-mail existe dans la base de données
-function emailExists($email) {
-    // Implémentez votre logique pour vérifier si l'adresse e-mail existe dans la base de données
-    // Retournez true si l'adresse e-mail existe, sinon retournez false
-}
-
-// Fonction pour générer un token unique
-function generateToken() {
-    $token = bin2hex(random_bytes(32)); // Génère un token de 32 octets en format hexadécimal
-    return $token;
-}
-
-// Fonction pour enregistrer le token dans la base de données
-function saveToken($email, $token) {
-    // Implémentez votre logique pour enregistrer le token dans la base de données
-    // Assurez-vous d'associer le token à l'adresse e-mail correspondante
-}
-
-function generateResetLink($token) {
-    $resetLink = 'reset.php?token=' . $token; 
-    return $resetLink;
-}
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mot de passe oublié</title>
+</head>
+<body>
+<form method="post" action="">
+    <label for="mail">Email:</label><br>
+    <input type="text" id="mail" name="mail"><br>
+    <input type="submit" value="Réinitialiser mot de passe">
+</form>
+</body>
+</html>
