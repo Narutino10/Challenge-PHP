@@ -29,7 +29,16 @@ try {
             if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 if (password_verify($password, $row['mdp'])) {
                     // L'utilisateur est authentifié avec succès
-                    header('Location: dashboard.php'); // Rediriger vers dashboard.php
+                    // Récupération du rôle de l'utilisateur
+                    $role = $row['role'];
+
+                    // Redirection en fonction du rôle
+                    if ($role === 'admin') {
+                        header('Location: Dashboard_admin.php');
+                    } else {
+                        header('Location: Dashboard_client.php');
+                    }
+
                     exit();
                 } else {
                     // L'authentification a échoué
@@ -46,6 +55,7 @@ try {
     // Gérer les erreurs de connexion à la base de données
     echo 'Erreur de connexion à la base de données : ' . $e->getMessage();
 }
+
 ?>
 
 <!DOCTYPE html>

@@ -9,9 +9,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $capacite = $_POST['capacite'];
     $typeterrain = $_POST['typeterrain'];
     $etat = $_POST['etat'];
-    $images = $_POST['images'];
     $adresse = $_POST['adresse'];
+    $success = false;
+    $images = "";
 
+    // Gérer le téléchargement des images
+    if (isset($_FILES['images'])) {
+        $file_tmp = $_FILES['images']['tmp_name'];
+        $file_name = $_FILES['images']['name'];
+        $images = "uploads/" . $file_name;
+        move_uploaded_file($file_tmp, $images);
+    }
 
     try {
         // Connexion à la base de données
@@ -20,19 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Requête d'insertion du terrain dans la base de données
         $stmt = $pdo->prepare('INSERT INTO terrain (nom, capacite, typeterrain, etat, images, adresse) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$nom, $capacite, $typeterrain, $etat, $images, $adresse]);
-
-        // Message de réussite pour la fenêtre modale
-        $successMessage = "Le terrain a été ajouté avec succès !";
+        $success = $stmt->execute([$nom, $capacite, $typeterrain, $etat, $images, $adresse]);
     } catch (PDOException $e) {
         echo 'Erreur de connexion à la base de données : ' . $e->getMessage();
     }
-}
-
-// Redirection vers la page de tableau de bord après l'ajout du terrain
-if (isset($successMessage)) {
-    header('Location: dashboard.php?message=' . urlencode($successMessage));
-    exit();
 }
 ?>
 
@@ -40,94 +39,99 @@ if (isset($successMessage)) {
 <html>
 <head>
     <title>Ajouter un terrain</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
+            background: #f2f2f2;
+            padding: 50px;
         }
 
-        h1 {
-            color: #fff;
+        .header {
             text-align: center;
-            background-color: #333;
-            padding: 20px;
-            margin: 0;
+            margin-bottom: 20px;
         }
 
-        .container {
+        .header h1 {
+            color: #4CAF50;
+            font-size: 36px;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
             max-width: 500px;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
+            margin: auto;
         }
 
-        label {
-            display: block;
+        .form-field {
             margin-bottom: 10px;
-            font-weight: bold;
         }
 
-        input[type="text"],
-        input[type="number"] {
+        .form-field label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-field input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ddd;
         }
 
-        button[type="submit"] {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+        .form-field input[type="submit"] {
+            background: #4CAF50;
+            border: 0;
+            color: white;
             cursor: pointer;
         }
+
+        .form-field input[type="submit"]:hover {
+            background: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 20px;
+        }
     </style>
-    <script>
-        // Afficher le message de réussite dans une fenêtre modale
-        window.addEventListener('DOMContentLoaded', (event) => {
-            <?php if (isset($_GET['message'])) : ?>
-            alert('<?php echo $_GET['message']; ?>');
-            <?php endif; ?>
-        });
-    </script>
 </head>
 <body>
-<h1>Ajouter un terrain</h1>
-
-<div>
-    <form method="post" action="ajouter_terrain.php">
-        <label for="nom">Nom du terrain:</label>
-        <input type="text" id="nom" name="nom" required>
-
-        <label for="capacite">Capacité:</label>
-        <input type="number" id="capacite" name="capacite">
-
-        <label for="typeterrain">Type de terrain:</label>
-        <input type="text" id="typeterrain" name="typeterrain">
-
-        <label for="etat">État:</label>
-        <input type="text" id="etat" name="etat">
-
-        <label for="images">Images:</label>
-        <input type="text" id="images" name="images">
-
-        <label for="adresse">Adresse:</label>
-        <input type="text" id="adresse" name="adresse" required>
-
-        <button type="submit" onclick="redirectToDashboard()">Créer</button>
+<div class="header">
+    <h1>Ajouter un terrain</h1>
+</div>
+<div class="form-container">
+    <form method="post" action="" enctype="multipart/form-data">
+        <div class="form-field">
+            <label for="nom">Nom du terrain:</label>
+            <input type="text" id="nom" name="nom" required>
+        </div>
+        <div class="form-field">
+            <label for="capacite">Capacité:</label>
+            <input type="number" id="capacite" name="capacite">
+        </div>
+        <div class="form-field">
+            <label for="typeterrain">Type de terrain:</label>
+            <input type="text" id="typeterrain" name="typeterrain">
+        </div>
+        <div class="form-field">
+            <label for="etat">État:</label>
+            <input type="text" id="etat" name="etat">
+        </div>
+        <div class="form-field">
+            <label for="images">Images:</label>
+            <input type="file" id="images" name="images">
+        </div>
+        <div class="form-field">
+            <label for="adresse">Adresse:</label>
+            <input type="text" id="adresse" name="adresse" required>
+        </div>
+        <div class="form-field">
+            <input type="submit" value="Ajouter">
+        </div>
     </form>
 </div>
-
-<script>
-    function redirectToDashboard() {
-        window.location.href = 'dashboard.php?message=<?php echo urlencode($successMessage); ?>';
-    }
-</script>
 </body>
 </html>
