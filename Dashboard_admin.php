@@ -126,17 +126,15 @@ try {
     </style>
 </head>
 <body>
-
 <header>
     <nav>
         <a href="ajout_terrain.php">Terrains</a>
         <a href="stat_admin.php">Statistiques complètes</a>
-        <a href="locations.php">Locations en cours</a>
+        <a href="loc_en_cours.php">Locations en cours</a>
         <a href="login.php">Déconnexion</a>
         <a href="register_admin.php">New Admin</a>
     </nav>
 </header>
-
 <div class="container">
     <h1>Tableau de bord</h1>
 
