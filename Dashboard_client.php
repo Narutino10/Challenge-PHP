@@ -158,11 +158,11 @@ try {
     <div>
         <h2>Fonctionnalités supplémentaires</h2>
 
-        <form method="post" action="reserve.php">
+        <form method="post" action="terrain.php">
             <input type="submit" value="Réserver un terrain">
         </form>
 
-        <form method="post" action="view_detailed_stats.php">
+        <form method="post" action="stat_client.php">
             <input type="submit" value="Voir les stats détaillées">
         </form>
 
