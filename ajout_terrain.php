@@ -29,6 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Requête d'insertion du terrain dans la base de données
         $stmt = $pdo->prepare('INSERT INTO terrain (nom, capacite, typeterrain, etat, images, adresse) VALUES (?, ?, ?, ?, ?, ?)');
         $success = $stmt->execute([$nom, $capacite, $typeterrain, $etat, $images, $adresse]);
+
+        if ($success) {
+            echo '<script type="text/javascript">alert("Terrain ajouté!"); window.location.href = "Dashboard_admin.php";</script>';
+        } else {
+            echo 'Erreur lors de l\'ajout du terrain.';
+        }
+
     } catch (PDOException $e) {
         echo 'Erreur de connexion à la base de données : ' . $e->getMessage();
     }
@@ -96,8 +103,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: red;
             margin-bottom: 20px;
         }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            margin-right: 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: #888;
+        }
+
     </style>
 </head>
+<header>
+<nav>
+    <a href="ajout_terrain.php">Terrains</a>
+    <a href="stat_admin.php">Statistiques complètes</a>
+    <a href="loc_en_cours.php">Locations en cours</a>
+    <a href="login.php">Déconnexion</a>
+    <a href="register_admin.php">New Admin</a>
+</nav>
+</header>
 <body>
 <div class="header">
     <h1>Ajouter un terrain</h1>
@@ -114,8 +154,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-field">
             <label for="typeterrain">Type de terrain:</label>
-            <input type="text" id="typeterrain" name="typeterrain">
+            <select id="typeterrain" name="typeterrain">
+                <option value="Gazon naturel">Gazon naturel</option>
+                <option value="Gazon synthétique">Gazon synthétique</option>
+                <option value="Gazon hybride">Gazon hybride</option>
+                <option value="Gazon stabilisé">Gazon stabilisé</option>
+                <option value="En salle">En salle</option>
+            </select>
         </div>
+
         <div class="form-field">
             <label for="etat">État:</label>
             <input type="text" id="etat" name="etat">

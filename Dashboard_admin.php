@@ -1,5 +1,4 @@
 <?php
-
 // Connexion à la base de données
 $host = 'localhost';
 $port = '5432';
@@ -13,10 +12,10 @@ try {
 
     // Récupération des terrains les plus utilisés avec leur nom et le nombre de locations
     $stmt1 = $pdo->query('SELECT terrain.nom, COUNT(*) AS nb_locations FROM locations
-                      JOIN terrain ON locations.terrain_id = terrain.nom
-                      GROUP BY terrain.nom
-                      ORDER BY nb_locations DESC
-                      LIMIT 5');
+                          JOIN terrain ON locations.terrain_id = terrain.id
+                          GROUP BY terrain.nom
+                          ORDER BY nb_locations DESC
+                          LIMIT 5');
     $terrainsUtilises = $stmt1->fetchAll(PDO::FETCH_ASSOC);
 
     // Récupération des statistiques du joueur connecté
@@ -126,17 +125,15 @@ try {
     </style>
 </head>
 <body>
-
 <header>
     <nav>
         <a href="ajout_terrain.php">Terrains</a>
         <a href="stat_admin.php">Statistiques complètes</a>
-        <a href="locations.php">Locations en cours</a>
+        <a href="loc_en_cours.php">Locations en cours</a>
         <a href="login.php">Déconnexion</a>
         <a href="register_admin.php">New Admin</a>
     </nav>
 </header>
-
 <div class="container">
     <h1>Tableau de bord</h1>
 

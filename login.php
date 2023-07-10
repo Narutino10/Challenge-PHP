@@ -6,6 +6,8 @@ $dbname = 'five';
 $username = 'postgres';
 $password = 'toto';
 
+session_start();  // démarre une nouvelle session ou reprend une session existante
+
 try {
     // Créer une nouvelle connexion PDO à la base de données PostgreSQL
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $username, $password);
@@ -32,6 +34,10 @@ try {
                     // Récupération du rôle de l'utilisateur
                     $role = $row['role'];
 
+                    // Enregistrement des informations de l'utilisateur dans la session
+                    $_SESSION['nom'] = $row['nom'];  // suppose que 'nom' est un champ dans votre table 'client'
+                    $_SESSION['role'] = $role;
+
                     // Redirection en fonction du rôle
                     if ($role === 'admin') {
                         header('Location: Dashboard_admin.php');
@@ -55,8 +61,8 @@ try {
     // Gérer les erreurs de connexion à la base de données
     echo 'Erreur de connexion à la base de données : ' . $e->getMessage();
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html>

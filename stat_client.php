@@ -1,4 +1,5 @@
 <?php
+session_start();
 $host = 'localhost';
 $port = '5432';
 $dbname = 'five';
@@ -103,26 +104,46 @@ try {
         nav a:hover {
             color: #888;
         }
+
+        .top-players {
+            margin-top: 40px;
+        }
+
+        .top-players h2 {
+            margin-bottom: 20px;
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .player-card img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .player-card .player-info {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
 <header>
     <nav>
-        <a href="ajout_terrain.php">Terrains</a>
-        <a href="stat_admin.php">Statistiques complètes</a>
-        <a href="loc_en_cours.php">Locations en cours</a>
+        <a href="terrain.php">Location terrain</a>
+        <a href="stat_client.php">Statistiques complètes</a>
+        <a href="loc_en_cours.php">Prochaine location</a>
         <a href="login.php">Déconnexion</a>
-        <a href="register_admin.php">New Admin</a>
     </nav>
 </header>
 <div class="container">
     <h1>Liste des joueurs</h1>
-    <label for="joueur">Sélectionnez un joueur :</label>
-    <select id="joueur" name="joueur">
-        <?php foreach ($joueurs as $joueur) : ?>
-            <option value="<?php echo $joueur['id']; ?>"><?php echo $joueur['nom']; ?></option>
-        <?php endforeach; ?>
-    </select>
+    <p>Bienvenue, <?php echo isset($_SESSION['nom']) ? $_SESSION['nom'] : 'Invité'; ?></p>
     <div id="joueur-details">
         <img src="" alt="" id="joueur-photo">
         <h2 id="nom-joueur"></h2>
@@ -133,7 +154,30 @@ try {
             <p><span>Passes décisives:</span> <span id="passes-decisives"></span></p>
         </div>
     </div>
-</div>
+
+    <div class="top-players">
+        <h2>Top 3 des meilleurs joueurs</h2>
+        <?php
+        // Trier les joueurs par nombre de buts décroissant
+        usort($joueurs, function ($a, $b) {
+            return $b['but'] - $a['but'];
+        });
+
+        // Afficher uniquement les 3 meilleurs joueurs
+        for ($i = 0; $i < min(count($joueurs), 3); $i++) {
+            $joueur = $joueurs[$i];
+            ?>
+            <div class="player-card">
+                <img src="<?php echo $joueur['images']; ?>" alt="Photo du joueur">
+                <div class="player-info">
+                    <p><span>Nom:</span> <?php echo $joueur['nom']; ?></p>
+                    <p><span>Matchs gagnés:</span> <?php echo $joueur['matchgagner']; ?></p>
+                    <p><span>Buts:</span> <?php echo $joueur['but']; ?></p>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+
 
 <script>
     const selectJoueur = document.getElementById('joueur');

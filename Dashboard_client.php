@@ -12,7 +12,7 @@ try {
 
     // Récupération des terrains les plus utilisés avec leur nom et le nombre de locations
     $stmt1 = $pdo->query('SELECT terrain.nom, COUNT(*) AS nb_locations FROM locations
-                          JOIN terrain ON locations.terrain_id = terrain.nom
+                          JOIN terrain ON locations.terrain_id = terrain.id
                           GROUP BY terrain.nom
                           ORDER BY nb_locations DESC
                           LIMIT 5');
@@ -121,12 +121,39 @@ try {
             background-color: #45a049;
         }
 
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            margin-right: 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: #888;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Location de terrains en ligne</h1>
+    <nav>
+        <a href="terrain.php">Location terrain</a>
+        <a href="stat_client.php">Statistiques complètes</a>
+        <a href="loc_en_cours.php">Prochaine location</a>
+        <a href="login.php">Déconnexion</a>
+    </nav>
 </header>
 
 <div class="container">
@@ -154,21 +181,6 @@ try {
     <div>
         <h2>Statistiques du joueur connecté</h2>
         <p>Total des locations : <?php echo $statistiquesJoueur['total_locations']; ?></p>
-    </div>
-    <div>
-        <h2>Fonctionnalités supplémentaires</h2>
-
-        <form method="post" action="reserve.php">
-            <input type="submit" value="Réserver un terrain">
-        </form>
-
-        <form method="post" action="view_detailed_stats.php">
-            <input type="submit" value="Voir les stats détaillées">
-        </form>
-
-        <form method="post" action="best_actions_week.php">
-            <input type="submit" value="Meilleures actions de la semaine">
-        </form>
     </div>
 
     <div>
